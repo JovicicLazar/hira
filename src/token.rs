@@ -6,13 +6,13 @@ pub enum Token {
     NUMBER(i64),            // '0..9'
 
     // singlequote keyword
-    SINGLE_QUOTE(String),   // '''
+    SINGLE_QUOTE,   // '''
 
     // comment token
     COMMENT,                // '#'
 
     // brackets tokens
-    EFT_PARENTHESIS,        // '('
+    LEFT_PARENTHESIS,       // '('
     RIGHT_PARENTHESIS,      // ')'
     LEFT_BRACE,             // '{'
     RIGHT_BRACE,            // '}'
@@ -38,7 +38,6 @@ pub enum Token {
 
     // relational operators
     EQUALITY,               // '=='
-    NON_EQUALITY,           // '!='
     LESS_THAN,              // '<'
     GREATER_THAN,           // '>'
     LESS_THAN_OR_EQUAL,     // '<='
@@ -47,7 +46,7 @@ pub enum Token {
     // logical operators
     AND,                    // 'and'
     OR,                     // 'or'
-    NOT,                    // '!'
+    NOT,                    // 'not'
 
     // condition keywords
     IF,                     // 'if'
