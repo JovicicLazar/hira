@@ -1,9 +1,6 @@
 use crate::token::Token;
 use std::str::FromStr;
-/*
-use std::num::ParseIntError;
-use std::iter::Peekable;
-*/
+
 pub fn lexer(src: &str) -> Vec<Token> {
     let mut tokens            = vec![];
     let mut input_chars = src.trim().chars().peekable();
@@ -231,39 +228,112 @@ pub fn lexer(src: &str) -> Vec<Token> {
     return tokens;
 }
 
-
-// just dummy tests
 #[cfg(test)]
-mod tests {
+mod lex_tests {
     use super::*;
 
+    // basic tests
     #[test]
-    fn test_lex_identifier() {
-        let input = "foo";
-        let expected = vec![Token::IDENTIFIER(String::from("foo"))];
-        println!("{:#?}", lexer(input));
-        assert_eq!(lexer(input), expected);
-    }
-    
-    #[test]
-    fn test_lex_number() {
-        let input = "123";
-        let expected = vec![Token::NUMBER(123)];
-        assert_eq!(lexer(input), expected);
-    }
-    
- 
-    #[test]
-    fn test_lex_operator() {
-        let input = "+";
-        let expected = vec![Token::PLUS];
-        assert_eq!(lexer(input), expected);
+    fn test_lexer_identifiers() {
+        let input = "if else elseif while for break int string bool true false function return null global input print and or not myIdentifier 123";
+        let expected_output = vec![
+            Token::IF, Token::ELSE, Token::ELSEIF, Token::WHILE, Token::FOR, Token::BREAK,
+            Token::INTEGER, Token::STRING, Token::BOOLEAN, Token::TRUE, Token::FALSE,
+            Token::FUNCTION, Token::RETURN, Token::NULL, Token::GLOBAL, Token::INPUT, Token::PRINT,
+            Token::AND, Token::OR, Token::NOT,
+            Token::IDENTIFIER("myIdentifier".to_string()), Token::NUMBER(123)
+        ];
+        assert_eq!(lexer(input), expected_output);
     }
 
     #[test]
-    fn test_single_quote() {
+    fn test_lexer_numbers() {
+        let input = "123 808 34412";
+        let expected_output = vec![
+            Token::NUMBER(123), Token::NUMBER(808), Token::NUMBER(34412)
+        ];
+        assert_eq!(lexer(input), expected_output);
+    }
+
+    #[test]
+    fn test_lexer_brackets() {
+        let input = "(){}[]";
+        let expected_output = vec![
+            Token::LEFT_PARENTHESIS, Token::RIGHT_PARENTHESIS,
+            Token::LEFT_BRACE, Token::RIGHT_BRACE,
+            Token::LEFT_BRACKET, Token::RIGHT_BRACKET,
+        ];
+        assert_eq!(lexer(input), expected_output);
+    }
+    
+    #[test]
+    fn test_lexer_arithmetic() {
+        let input = "+= -= *= /= %= ++ -- ** + - * / %";
+        let expected_output = vec![
+            Token::INCREMENT_ASSIGN, Token::DECREMENT_ASSIGN,
+            Token::ASTERIX, Token::ASSIGN, Token::SLASH, Token::ASSIGN, Token::MODULO, Token::ASSIGN,
+            Token::PLUS, Token::PLUS, Token::MINUS, Token::MINUS, Token::EXPONENT,
+            Token::PLUS, Token::MINUS, Token::ASTERIX, Token::SLASH, Token::MODULO,
+        ];
+        assert_eq!(lexer(input), expected_output);
+    }
+    
+    #[test]
+    fn test_lexer_relational() {
+        let input = "< <= > >= ==";
+        let expected_output = vec![
+            Token::LESS_THAN, Token::LESS_THAN_OR_EQUAL,
+            Token::GREATER_THAN, Token::GREATER_THAN_OR_EQUAL,
+            Token::EQUALITY
+        ];
+        assert_eq!(lexer(input), expected_output);
+    }
+    
+    #[test]
+    fn test_lexer_comma_semicolon() {
+        let input = ",;";
+        let expected_output = vec![
+            Token::COMMA, Token::SEMICOLLON,
+        ];
+        assert_eq!(lexer(input), expected_output);
+    }
+    
+    #[test]
+    fn test_lexer_single_quote() {
         let input = "'";
-        let expected = vec![Token::SINGLE_QUOTE];
-        assert_eq!(lexer(input), expected);
+        let expected_output = vec![
+            Token::SINGLE_QUOTE,
+        ];
+        assert_eq!(lexer(input), expected_output);
+    }
+    
+    #[test]
+    fn test_lexer_comments() {
+        let input = "this # is a comment";
+        let expected_output = vec![
+            Token::IDENTIFIER("this".to_string())
+        ];
+        assert_eq!(lexer(input), expected_output);
+    }
+
+    // code simulation tests
+    #[test]
+    fn function_return() {
+        let input = "
+            function fun(param) {
+                if a == b {
+                    return true;
+                } else {
+                    return false;
+                }    
+            }
+        ";
+        let expected_output = vec![
+            Token::FUNCTION, Token::IDENTIFIER("fun".to_string()), Token::LEFT_PARENTHESIS, Token::IDENTIFIER("param".to_string()),
+            Token::RIGHT_PARENTHESIS, Token::LEFT_BRACE, Token::IF, Token::IDENTIFIER("a".to_string()), Token::EQUALITY, Token::IDENTIFIER("b".to_string()),
+            Token::LEFT_BRACE, Token::RETURN, Token::TRUE, Token::SEMICOLLON, Token::RIGHT_BRACE, Token::ELSE, Token::LEFT_BRACE,
+            Token::RETURN, Token::FALSE, Token::SEMICOLLON, Token::RIGHT_BRACE, Token::RIGHT_BRACE
+        ];
+        assert_eq!(lexer(input), expected_output);
     }
 }
