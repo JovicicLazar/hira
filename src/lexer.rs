@@ -57,18 +57,28 @@ pub fn lexer(src: &str) -> Vec<Token> {
 
             // numbers match
             '0'..='9' => {
-                let mut number = String::new();
+                let mut number_or_identifier = String::new();
+                let mut identifier = false;
                 while let Some(&c) = input_chars.peek() {
                     match c {
                         '0'..='9' => {
-                            number.push(c);
+                            number_or_identifier.push(c);
+                            input_chars.next();
+                        }
+                        'a'..='z' | 'A'..='Z' => {
+                            identifier = true;
+                            number_or_identifier.push(c);
                             input_chars.next();
                         }
                         _ => break,
                     }
                 }
-                let value = i64::from_str(number.as_str()).unwrap();
-                tokens.push(Token::NUMBER(value));
+                if identifier {
+                    tokens.push(Token::IDENTIFIER(number_or_identifier.to_string()));
+                } else {
+                    let value = i64::from_str(number_or_identifier.as_str()).unwrap();
+                    tokens.push(Token::NUMBER(value));
+                }   
             }
 
             // brackets match
@@ -312,6 +322,19 @@ mod lex_tests {
         let input = "this # is a comment";
         let expected_output = vec![
             Token::IDENTIFIER("this".to_string())
+        ];
+        assert_eq!(lexer(input), expected_output);
+    }
+
+    #[test]
+    fn test_numbers_and_identifiers() {
+        let input = "123 123var 1 var123 123";
+        let expected_output = vec![
+            Token::NUMBER(123),
+            Token::IDENTIFIER("123var".to_string()),
+            Token::NUMBER(1),
+            Token::IDENTIFIER("var123".to_string()),
+            Token::NUMBER(123)
         ];
         assert_eq!(lexer(input), expected_output);
     }
