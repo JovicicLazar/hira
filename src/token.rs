@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Token {
 
     // identifier keywords
@@ -9,7 +9,7 @@ pub enum Token {
     SINGLE_QUOTE,   // '''
 
     // comment token
-    COMMENT,                // '#'
+    // COMMENT,                // '#'
 
     // brackets tokens
     LEFT_PARENTHESIS,       // '('
